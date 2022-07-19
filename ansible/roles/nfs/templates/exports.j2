@@ -1,0 +1,9 @@
+# master
+{% for master in groups['masters'] %}
+/mnt/nfs    {{ hostvars[master].internal_ip }}(rw,sync)
+{% endfor %}
+
+# workers
+{% for worker in groups['workers'] %}
+/mnt/nfs    {{ hostvars[worker].internal_ip }}(rw,sync)
+{% endfor %}

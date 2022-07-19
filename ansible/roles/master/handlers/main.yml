@@ -1,0 +1,9 @@
+---
+# handlers file for master
+- name: cargar firewall
+  service:
+    name: firewalld
+    state: reloaded
+
+- name: reinicio
+  reboot:

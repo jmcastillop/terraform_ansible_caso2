@@ -1,0 +1,13 @@
+---
+# vars file for master
+puertos:
+    - 6443/tcp
+    - 2379-2380/tcp
+    - 10250-10252/tcp
+    - 10255/tcp
+
+archivos_yml:
+    - name: networking
+      url: https://projectcalico.docs.tigera.io/manifests/canal.yaml
+    - name: ingress_controller
+      url: https://raw.githubusercontent.com/haproxytech/kubernetes-ingress/master/deploy/haproxy-ingress.yaml

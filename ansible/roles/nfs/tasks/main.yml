@@ -1,0 +1,33 @@
+---
+# tasks file for nfs
+- name: iniciar el servicio NFS
+  service:
+    name: nfs-server
+    state: started
+    enabled: yes
+  tags: nfs
+
+- name: Directorio NFS
+  file:
+    path: /mnt/nfs
+    state: directory
+    owner: 'nobody'
+    group: 'nobody'
+    mode: '0777'
+  tags: nfs
+
+- name: NFS config
+  template:
+    src: exports.j2
+    dest: /etc/exports
+  notify: exportfs
+  tags: nfs
+
+- name: activar firewall para servicios nfs
+  firewalld:
+    service: "{{ item }}"
+    permanent: yes
+    state: enabled
+  loop: "{{ servicios }}"
+  notify: cargar firewall
+  tags: nfs

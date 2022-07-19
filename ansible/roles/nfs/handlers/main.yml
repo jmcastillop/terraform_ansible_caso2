@@ -1,0 +1,9 @@
+---
+# handlers file for nfs
+- name: exportfs
+  shell: exportfs -arv
+
+- name: cargar firewall
+  service:
+    name: firewalld
+    state: reloaded

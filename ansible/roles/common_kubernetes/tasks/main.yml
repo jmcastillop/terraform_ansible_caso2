@@ -1,0 +1,134 @@
+---
+# tasks file for common_kubernetes
+- name: crear el directorio nfs 
+  file:
+    path: /mnt/nfs
+    state: directory
+    mode: 0755
+  tags: kubernetes
+
+- name: Mount up device by label
+  mount:
+    path: /mnt/nfs
+    src: "vm-nfs:/mnt/nfs"
+    fstype: nfs
+    state: present
+  notify: reinicio
+  tags: kubernetes
+
+- name: iniciar firewalld
+
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+  tags: kubernetes
+
+- name: habilitar puertos kubernetes en firewall para nodo Master y Workers
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    state: enabled
+    immediate: yes
+  loop: "{{ puertos }}"
+  notify: cargar firewall
+  tags: kubernetes
+
+- name: br_netfilter module
+  modprobe:
+    name: br_netfilter
+  tags: kubernetes
+
+- name: habilitar masquerade en firewall de manera permanente
+  firewalld:
+    masquerade: yes
+    permanent: yes
+    state: enabled
+  notify: cargar firewall
+  tags: kubernetes
+
+- name: configurar sysctl en archivo k8s.conf
+  sysctl:
+    name: "{{ item }}"
+    value: 1
+    sysctl_set: yes
+    state: present
+    sysctl_file: /etc/sysctl.d/k8s.conf
+  loop:
+    - net.bridge.bridge-nf-call-ip6tables
+    - net.bridge.bridge-nf-call-iptables
+    - net.ipv4.ip_forward
+  notify: reinicio_sys
+  tags: kubernetes
+
+- name: disable swap
+  shell: swapoff -a
+  tags: kubernetes
+    
+- name: eliminar partición swap de /etc/fstab
+  replace:
+    path: /etc/fstab
+    regexp:  '^(\s*)([^#\n]+\s+)(\w+\s+)swap(\s+.*)$'
+    replace: '#/dev/mapper/cs-swap     none                    swap    defaults        0 0 \1'
+  tags: kubernetes
+
+- name: descargando crio-o
+  get_url:
+    url: "{{ item.url }}"
+    dest: "{{ item.dest }}"
+  loop:
+    - url:  https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/CentOS_8_Stream/devel:kubic:libcontainers:stable.repo
+      dest: /etc/yum.repos.d/devel:kubic:libcontainers:stable.repo
+    - url: https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable:cri-o:1.24/CentOS_8_Stream/devel:kubic:libcontainers:stable:cri-o:1.24.repo
+      dest: /etc/yum.repos.d/devel:kubic:libcontainers:stable:cri-o:1.24.repo
+  tags: kubernetes
+
+- name: instalación de cri-o
+  dnf:
+    name: cri-o
+    state: latest
+  tags: kubernetes
+
+- name: módulos kernel para cri-o
+  copy:
+    src: crio.conf
+    dest: /etc/modules-load.d/crio.conf
+  tags: kubernetes
+
+- name: iniciar cri-o
+  service:
+    name: crio
+    enabled: yes
+    state: started
+  tags: kubernetes
+
+- name: Creating a repository file for Kubernetes
+  file:
+    path: /etc/yum.repos.d/kubernetes.repo
+    state: touch
+  tags: kubernetes
+
+- name: habilitar el repositorio de Kubernetes
+  yum_repository:
+    name: Kubernetes
+    description: Kubernetes YUM repository
+    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+    gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+    gpgcheck: yes
+    repo_gpgcheck: yes
+    exclude: kubelet kubeadm kubectl
+  tags: kubernetes
+
+- name: instalar rmp kubernetes
+  dnf:
+    name: "{{ item }}"
+    disable_excludes: kubernetes
+  loop: "{{ rpms }}"
+  tags: kubernetes
+
+- name: iniciar servicio kubelet
+  service:
+    name: kubelet
+    state: started
+    enabled: yes
+  tags: kubernetes

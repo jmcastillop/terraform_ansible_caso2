@@ -1,0 +1,6 @@
+[masters]
+vm-master ansible_host=51.142.229.189 nombre_dominio=vm-master internal_ip=10.0.2.11 ansible_user=azureuser
+[workers]
+vm-worker ansible_host=20.117.148.6 nombre_dominio=vm-worker internal_ip=10.0.2.12 ansible_user=azureuser
+[nfs]
+vm-nfs ansible_host=51.142.228.201 nombre_dominio=vm-nfs internal_ip=10.0.2.13 ansible_user=azureuser

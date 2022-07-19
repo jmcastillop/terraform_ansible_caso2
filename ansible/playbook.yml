@@ -1,0 +1,55 @@
+---
+- name: 'Actualizacion de sistema operativo y configuración básica'
+  hosts: all
+  gather_facts: true
+  become: true
+  tasks:
+    - name: 'Instalación común servidores'
+      include_role:
+        name: common
+      tags: common
+
+- name: 'Instalación servidor nfs'
+  hosts: nfs
+  become: true
+  tasks:
+    - name: 'Instalación servidor nfs'
+      include_role:
+        name: nfs
+      tags: nfs
+
+- name: 'Instalación kubernetes Master y Workers'
+  hosts: masters, workers
+  become: true
+  tasks:
+    - name: 'Instalación común kubernetes'
+      include_role:
+        name: common_kubernetess
+      tags: kubernetes
+
+- name: 'Configuración de kubernetes en Master'
+  hosts: masters
+  become: true
+  tasks:
+    - name: 'Configuración kubernetes en Master'
+      include_role:
+        name: master
+      tags: kubeMaster
+
+- name: 'Configuración de kubernetes en Worker'
+  hosts: workers
+  become: true
+  tasks:
+    - name: 'Configuración kubernetes en Worker'
+      include_role:
+        name: worker
+      tags: kubeWorker
+
+- name: 'Despliegue de la aplicación'
+  hosts: masters
+  become: true
+  tasks:
+    - name: 'Despliegue de la aplicación'
+      include_role:
+        name: app
+      tags: app

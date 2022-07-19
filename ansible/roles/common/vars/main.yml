@@ -1,0 +1,13 @@
+---
+# vars file for common
+servicios:
+  - chronyd
+  - firewalld
+
+rpms:
+  - chrony
+  - firewalld
+
+utilidades_nfs:
+  - nfs-utils
+  - nfs4-acl-tools

@@ -1,0 +1,13 @@
+---
+# vars file for common_kubernetes
+OS: 'CentOS_8_Stream'
+Version: '1.24'
+url_1: '/etc/yum.repos.d/devel:kubic:libcontainers:stable.repo https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ OS }}/devel:kubic:libcontainers:stable.repo'
+url_2: '/etc/yum.repos.d/devel:kubic:libcontainers:stable:cri-o:{{ Version }}.repo https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable:cri-o:{{ Version }}/{{ OS }}/devel:kubic:libcontainers:stable:cri-o:{{ Version }}.repo'
+rpms:
+  - kubelet
+  - kubeadm
+  - kubectl
+puertos:
+    - 8285/udp
+    - 8472/udp

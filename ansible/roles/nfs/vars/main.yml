@@ -1,0 +1,6 @@
+---
+# vars file for nfs
+servicios:
+  - nfs
+  - rpc-bind
+  - mountd
