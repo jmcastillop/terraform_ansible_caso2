@@ -25,7 +25,7 @@
         selector:
           matchLabels:
             app: apache
-        replicas: 2 # indica al controlador que ejecute 2 pods
+        #replicas: 2 # indica al controlador que ejecute 2 pods
         template:
           metadata:
             labels:
@@ -36,13 +36,13 @@
               image: quay.io/startx/apache
               ports:
               - containerPort: 80
-              volumeMounts:
-              - name: mnt-nfs
-                mountPath: /mnt/nfs
-            volumes:
-            - name: mnt-nfs
-              persistentVolumeClaim:
-                claimName: nfs-volume
+              #volumeMounts:
+              #- name: mnt-nfs
+              #  mountPath: /mnt/nfs
+            #volumes:
+            #- name: mnt-nfs
+            #  persistentVolumeClaim:
+            #    claimName: nfs-volume
   tags: app
 
 - name: create service
@@ -80,7 +80,7 @@
         rules:
         - http:
             paths:
-            - path: /volumes
+            - path: /
               pathType: Prefix
               backend:
                 service:

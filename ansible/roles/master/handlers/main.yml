@@ -7,3 +7,4 @@
 
 - name: reinicio
   reboot:
+    post_reboot_delay: 150
