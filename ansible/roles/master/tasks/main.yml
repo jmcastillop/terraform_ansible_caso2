@@ -64,18 +64,17 @@
     state: directory
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
-    mode: 0644
+    mode: 0755
   tags: kubeMaster
 
 - name: copia admin.conf de kube a configuración usuario 
-  become: false
   copy:
     src: /etc/kubernetes/admin.conf
     dest: /home/{{ ansible_user }}/.kube/config
     remote_src: yes
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
-    mode: 0644
+    mode: 0755
   tags: kubeMaster
 
 - name: descarga definición de las políticas de red y HAProxy

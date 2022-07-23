@@ -29,7 +29,6 @@
     port: "{{ item }}"
     permanent: yes
     state: enabled
-    immediate: yes
   loop: "{{ puertos }}"
   notify: cargar firewall
   tags: kubernetes
@@ -130,7 +129,7 @@
 
 - name: línea en servicio kubelet para solucionar problema cgroups
   lineinfile:
-    path: /usr/lib/systemd/system/kubelet.service.d/10-etcd-service-manager.conf
+    path: /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
     line: "--runtime-cgroups=/systemd/system.slice --kubelet-cgroups=/systemd/system.slice"
   tags: kubernetes
 

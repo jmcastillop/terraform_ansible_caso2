@@ -16,7 +16,7 @@
     mode: '0777'
   tags: nfs
 
-- name: NFS config
+- name: Se añade el fichero exports con la conf de los directorios
   template:
     src: exports.j2
     dest: /etc/exports

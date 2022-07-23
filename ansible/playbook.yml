@@ -47,7 +47,7 @@
 
 - name: 'Despliegue de la aplicación'
   hosts: masters
-  become: true
+  become: false
   tasks:
     - name: 'Despliegue de la aplicación'
       include_role:

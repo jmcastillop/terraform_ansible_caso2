@@ -43,7 +43,7 @@
             - name: mnt-nfs
               persistentVolumeClaim:
                 claimName: nfs-volume
-          tags: app
+  tags: app
 
 - name: create service
   k8s:
@@ -87,7 +87,7 @@
                   name: apache-service
                   port:
                     number: 9090
-    tags: app
+  tags: app
 
 - name: create configmap
   k8s:
