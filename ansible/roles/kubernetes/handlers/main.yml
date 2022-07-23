@@ -1,0 +1,9 @@
+---
+# handlers file for common_kubernetes
+- name: cargar firewall
+  service:
+    name: firewalld
+    state: reloaded
+
+- name: reinicio
+  reboot:

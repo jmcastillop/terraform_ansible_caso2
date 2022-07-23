@@ -6,9 +6,9 @@
       apiVersion: v1
       kind: Namespace
       metadata:
-        name: nginx
+        name: apache
         labels:
-          app: nginx
+          app: apache
   tags: app
 
 - name: create pod
@@ -17,23 +17,23 @@
       apiVersion: apps/v1 # Usa apps/v1beta2 para versiones anteriores a 1.9.0
       kind: Deployment
       metadata:
-        name: nginx-deployment
-        namespace: nginx
+        name: apache-deployment
+        namespace: apache
         labels:
-          app: nginx
+          app: apache
       spec:
         selector:
           matchLabels:
-            app: nginx
+            app: apache
         replicas: 2 # indica al controlador que ejecute 2 pods
         template:
           metadata:
             labels:
-              app: nginx
+              app: apache
           spec:
             containers:
-            - name: nginx
-              image: mcr.microsoft.com/mcr/hello-world:v1.0
+            - name: apache
+              image: quay.io/startx/apache
               ports:
               - containerPort: 80
               volumeMounts:
@@ -51,11 +51,11 @@
       apiVersion: v1
       kind: Service
       metadata:
-        name: nginx-service
-        namespace: nginx
+        name: apache-service
+        namespace: apache
       spec:
         selector:
-          app: nginx
+          app: apache
         ports:
           - name: http
             protocol: TCP
@@ -69,10 +69,10 @@
       apiVersion: networking.k8s.io/v1
       kind: Ingress
       metadata:
-        name: nginx-ingress
-        namespace: nginx
+        name: apache-ingress
+        namespace: apache
         labels:
-          app: nginx
+          app: apache
         annotations:
           haproxy.org/path-rewrite: "/"
           kubernetes.io/ingress.class: haproxy
@@ -84,7 +84,7 @@
               pathType: Prefix
               backend:
                 service:
-                  name: nginx-service
+                  name: apache-service
                   port:
                     number: 9090
     tags: app
@@ -96,7 +96,7 @@
       kind: ConfigMap
       metadata:
         name: haproxy-configmap
-        namespace: nginx
+        namespace: apache
       data:
         scale-server-slots: "42"
         ssl-redirect: "OFF"

@@ -7,7 +7,7 @@
     mode: 0755
   tags: kubernetes
 
-- name: Mount up device by label
+- name: Montar la unidad compartida
   mount:
     path: /mnt/nfs
     src: "vm-nfs:/mnt/nfs"
@@ -52,13 +52,14 @@
     name: "{{ item }}"
     value: 1
     sysctl_set: yes
+    reload: yes
     state: present
     sysctl_file: /etc/sysctl.d/k8s.conf
   loop:
     - net.bridge.bridge-nf-call-ip6tables
     - net.bridge.bridge-nf-call-iptables
     - net.ipv4.ip_forward
-  notify: reinicio_sys
+  notify: reinicio
   tags: kubernetes
 
 - name: disable swap
@@ -66,10 +67,10 @@
   tags: kubernetes
     
 - name: eliminar partición swap de /etc/fstab
-  replace:
-    path: /etc/fstab
-    regexp:  '^(\s*)([^#\n]+\s+)(\w+\s+)swap(\s+.*)$'
-    replace: '#/dev/mapper/cs-swap     none                    swap    defaults        0 0 \1'
+  lineinfile:
+       path: /etc/fstab
+       regexp: 'swap'
+       state: absent
   tags: kubernetes
 
 - name: descargando crio-o
@@ -114,6 +115,7 @@
     description: Kubernetes YUM repository
     baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
     gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+    enabled: yes
     gpgcheck: yes
     repo_gpgcheck: yes
     exclude: kubelet kubeadm kubectl
@@ -122,8 +124,14 @@
 - name: instalar rmp kubernetes
   dnf:
     name: "{{ item }}"
-    disable_excludes: kubernetes
+    disable_excludes: Kubernetes
   loop: "{{ rpms }}"
+  tags: kubernetes
+
+- name: línea en servicio kubelet para solucionar problema cgroups
+  lineinfile:
+    path: /usr/lib/systemd/system/kubelet.service.d/10-etcd-service-manager.conf
+    line: "--runtime-cgroups=/systemd/system.slice --kubelet-cgroups=/systemd/system.slice"
   tags: kubernetes
 
 - name: iniciar servicio kubelet

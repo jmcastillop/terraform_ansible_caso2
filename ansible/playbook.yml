@@ -24,7 +24,7 @@
   tasks:
     - name: 'Instalación común kubernetes'
       include_role:
-        name: common_kubernetess
+        name: kubernetes
       tags: kubernetes
 
 - name: 'Configuración de kubernetes en Master'
