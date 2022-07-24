@@ -1,6 +1,14 @@
 ---
 # tasks file for app
-- name: create namespace
+#- name: habilitar puertos ingress controller
+#  firewalld:
+#    port: 3000-32767/
+#    permanent: yes
+#    state: enabled
+#    immediate: yes
+#  tags: app
+
+- name: crear namespace
   k8s:
     definition:
       apiVersion: v1
@@ -11,10 +19,10 @@
           app: apache
   tags: app
 
-- name: create pod
+- name: crear pod
   k8s:
     definition:
-      apiVersion: apps/v1 # Usa apps/v1beta2 para versiones anteriores a 1.9.0
+      apiVersion: apps/v1
       kind: Deployment
       metadata:
         name: apache-deployment
@@ -61,6 +69,7 @@
             protocol: TCP
             port: 9090
             targetPort: 8080
+        type: NodePort
   tags: app
 
 - name: create ingress
