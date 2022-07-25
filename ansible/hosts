@@ -1,8 +1,8 @@
 [all:vars]
-ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+ansible_ssh_common_args='-o StrictHostKeyChecking=no' #para que no pida validación primera vez
 [masters]
-vm-master ansible_host=51.142.115.201 nombre_dominio=vm-master internal_ip=10.0.2.11 ansible_user=azureuser
+vm-master ansible_host=20.117.80.43 nombre_dominio=vm-master internal_ip=10.0.2.11 ansible_user=azureuser
 [workers]
-vm-worker ansible_host=51.142.115.247 nombre_dominio=vm-worker internal_ip=10.0.2.12 ansible_user=azureuser
+vm-worker ansible_host=20.117.80.89 nombre_dominio=vm-worker internal_ip=10.0.2.12 ansible_user=azureuser
 [nfs]
-vm-nfs ansible_host=51.142.115.177 nombre_dominio=vm-nfs internal_ip=10.0.2.13 ansible_user=azureuser
+vm-nfs ansible_host=20.117.80.23 nombre_dominio=vm-nfs internal_ip=10.0.2.13 ansible_user=azureuser
