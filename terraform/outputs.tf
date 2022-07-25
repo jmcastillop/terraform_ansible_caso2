@@ -1,3 +1,4 @@
+# Declaramos la variables de salida
 output "resource_group_id" {
   value = azurerm_resource_group.rg1.id
 }

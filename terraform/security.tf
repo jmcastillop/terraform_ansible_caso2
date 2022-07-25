@@ -1,3 +1,10 @@
+# Añadimos los grupos de seguridad limitando el acceso desde fuera
+# Le añadimos los puertos justos que vayamos a necesitar para poder
+# realizar el caso práctico.
+
+# Grupo de Seguridad para el servidor master con dos reglas, la regla
+# para el ssh y otra para el ingress controller para poder acceder
+# a la aplicación desde el exterior a Azure
 resource "azurerm_network_security_group" "master" {
     name                = "master_security"
     location            = azurerm_resource_group.rg1.location
@@ -28,7 +35,8 @@ resource "azurerm_network_security_group" "master" {
     }
     
 }
-
+# Grupo de Seguridad para el servidor worker con la regla
+# para habilitar el ssh
 resource "azurerm_network_security_group" "worker" {
     name                = "worker_security"
     location            = azurerm_resource_group.rg1.location
@@ -47,7 +55,8 @@ resource "azurerm_network_security_group" "worker" {
     }
     
 }
-
+# Grupo de Seguridad para el servidor nfs con la regla
+# para habilitar el ssh
 resource "azurerm_network_security_group" "nfs" {
     name                = "nfs_security"
     location            = azurerm_resource_group.rg1.location
@@ -66,7 +75,7 @@ resource "azurerm_network_security_group" "nfs" {
     }
     
 }
-
+# Se asocia el grupo de seguridad al cada interfaz de red de cada máquina
 resource "azurerm_network_interface_security_group_association" "master" {
     network_interface_id      = azurerm_network_interface.master_nic.id
     network_security_group_id = azurerm_network_security_group.master.id
