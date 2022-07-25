@@ -1,0 +1,14 @@
+---
+# https://docs.ansible.com/ansible/2.9/modules/k8s_module.html#k8s-module
+- name: crear configmap
+  k8s:
+    definition:
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: haproxy-configmap
+        namespace: apache
+      data:
+        scale-server-slots: "42"
+        ssl-redirect: "OFF"
+  tags: app

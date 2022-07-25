@@ -1,0 +1,46 @@
+---
+# Se cambia el nombre del host
+- name: 'Establecer nombre de host'
+  hostname:
+    name: "{{ nombre_dominio }}"
+    use: systemd
+  tags: common
+# Se genera un fichero hosts basandonos es un template ubicado en Templates
+#para que todas las máquinas se vean por su nombre además de por su ip
+- name: 'Generar fichero /etc/hosts'
+  template:
+    src: templates/hosts.j2
+    dest: /etc/hosts
+    owner: root
+    mode: '0644'
+  tags: common
+# Se genera un fichero hostmane basandonos es un template ubicado en Templates
+- name: 'Generar fichero /etc/hostname'
+  template:
+    src: templates/hostname.j2
+    dest: /etc/hostname
+    owner: root
+    mode: '0644'
+  tags: common
+
+# https://docs.ansible.com/ansible/2.9/modules/yum_module.html#yum-module
+- name: 'actualiza sistema'
+  yum: 
+    name: '*' 
+    state: latest
+    update_cache: true 
+    exclude: kernel*
+  notify: reinicio
+  tags: common
+# https://docs.ansible.com/ansible/2.9/modules/timezone_module.html#timezone-module
+- name: configura el timezone a Europe/Madrid
+  timezone:
+    name: Europe/Madrid
+  notify: reinicio
+  tags: common
+# https://docs.ansible.com/ansible/2.9/modules/selinux_module.html#selinux-module
+- name: desactivar SELinux
+  selinux:
+    state: disabled
+  notify: reinicio
+  tags: common

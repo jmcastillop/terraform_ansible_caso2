@@ -1,0 +1,10 @@
+---
+# https://docs.ansible.com/ansible/2.9/modules/firewalld_module.html#firewalld-module
+- name: habilitar puertos en el firewall
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    state: enabled
+    immediate: yes
+  loop: "{{ puertos }}"
+  tags: kubeWorker

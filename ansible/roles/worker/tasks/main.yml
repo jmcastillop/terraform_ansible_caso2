@@ -1,23 +1,6 @@
 ---
 # tasks file for worker
-- name: habilitar puertos en el firewall
-  firewalld:
-    port: "{{ item }}"
-    permanent: yes
-    state: enabled
-    immediate: yes
-  loop: "{{ puertos }}"
-  tags: kubeWorker
-
-- name: check joined
-  stat:
-    path: /etc/kubernetes/pki/ca.crt
-  register: joined_check
-  tags: kubeWorker
-
-- name: join
-  script: "/tmp/k8s_join.sh"
-  when: not joined_check.stat.exists
-  notify:
-    - reinicio
-  tags: kubeWorker
+# Se fraccionan los tasks para facilitar el testeo y no tener que
+# pasar todo
+- import_tasks: 1-firewall.yml
+- import_tasks: 2-join-cluster.yml

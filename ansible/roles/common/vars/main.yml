@@ -1,5 +1,8 @@
 ---
 # vars file for common
+# Creamos la variables de los servicios y paquetes
+# que vamos a instalar en los tasks de common
+
 servicios:
   - chronyd
   - firewalld

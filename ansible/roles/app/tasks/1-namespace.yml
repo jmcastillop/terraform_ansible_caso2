@@ -1,0 +1,12 @@
+---
+# https://docs.ansible.com/ansible/2.9/modules/k8s_module.html#k8s-module
+- name: crear namespace
+  k8s:
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: apache
+        labels:
+          app: apache
+  tags: app

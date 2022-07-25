@@ -1,0 +1,95 @@
+---
+# https://docs.ansible.com/ansible/2.9/modules/sysctl_module.html#sysctl-module
+- name: configurar sysctl en archivo k8s.conf
+  sysctl:
+    name: "{{ item }}"
+    value: 1
+    sysctl_set: yes
+    reload: yes
+    state: present
+    sysctl_file: /etc/sysctl.d/k8s.conf
+  loop:
+    - net.bridge.bridge-nf-call-ip6tables
+    - net.bridge.bridge-nf-call-iptables
+    - net.ipv4.ip_forward
+  notify: reinicio
+  tags: kubernetes
+# Dehabilitamos el swap como requisito para la instalación de Kubernetes
+- name: desabilitar swap
+  shell: swapoff -a
+  tags: kubernetes
+# https://docs.ansible.com/ansible/2.9/modules/lineinfile_module.html#lineinfile-module    
+- name: eliminar partición swap de /etc/fstab
+  lineinfile:
+       path: /etc/fstab
+       regexp: 'swap'
+       state: absent
+  tags: kubernetes
+# https://docs.ansible.com/ansible/2.9/modules/get_url_module.html#get-url-module
+- name: descargando crio-o
+  get_url:
+    url: "{{ item.url }}"
+    dest: "{{ item.dest }}"
+  loop:
+    - url: https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/CentOS_8_Stream/devel:kubic:libcontainers:stable.repo
+      dest: /etc/yum.repos.d/devel:kubic:libcontainers:stable.repo
+    - url:  https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable:cri-o:1.24/CentOS_8_Stream/devel:kubic:libcontainers:stable:cri-o:1.24.repo
+      dest: /etc/yum.repos.d/devel:kubic:libcontainers:stable:cri-o:1.24.repo
+  tags: kubernetes
+
+- name: instalación de cri-o
+  dnf:
+    name: cri-o
+    state: latest
+  tags: kubernetes
+# https://docs.ansible.com/ansible/2.9/modules/dnf_module.html#dnf-module
+- name: añadir módulos kernel para cri-o
+  copy:
+    src: crio.conf
+    dest: /etc/modules-load.d/crio.conf
+  tags: kubernetes
+
+- name: iniciar cri-o
+  service:
+    name: crio
+    enabled: yes
+    state: started
+  tags: kubernetes
+# https://docs.ansible.com/ansible/2.9/modules/file_module.html#file-module
+- name: Creando archivos de repositorio para Kubernetes
+  file:
+    path: /etc/yum.repos.d/kubernetes.repo
+    state: touch
+  tags: kubernetes
+# https://docs.ansible.com/ansible/2.9/modules/yum_repository_module.html#yum-repository-module
+- name: habilitar el repositorio de Kubernetes
+  yum_repository:
+    name: Kubernetes
+    description: Kubernetes YUM repository
+    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+    gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+    enabled: yes
+    gpgcheck: yes
+    repo_gpgcheck: yes
+    exclude: kubelet kubeadm kubectl
+  tags: kubernetes
+# https://docs.ansible.com/ansible/2.9/modules/dnf_module.html#dnf-module
+- name: instalar rmp kubernetes
+  dnf:
+    name: "{{ item }}"
+    disable_excludes: Kubernetes
+  loop: "{{ rpms }}"
+  tags: kubernetes
+# https://docs.ansible.com/ansible/2.9/modules/lineinfile_module.html#lineinfile-module  
+- name: línea en servicio kubelet para solucionar problema cgroups
+  lineinfile:
+    path: /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
+    line: "--runtime-cgroups=/systemd/system.slice --kubelet-cgroups=/systemd/system.slice"
+  tags: kubernetes
+# https://docs.ansible.com/ansible/2.9/modules/service_module.html#service-module
+- name: iniciar servicio kubelet
+  service:
+    name: kubelet
+    state: started
+    enabled: yes
+  tags: kubernetes

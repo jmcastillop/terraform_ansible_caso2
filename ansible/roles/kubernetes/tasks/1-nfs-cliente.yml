@@ -1,0 +1,19 @@
+---
+# Se crea un directorio para montarlo posteriormente con el servidor nfs
+# https://docs.ansible.com/ansible/2.9/modules/file_module.html#file-module
+- name: crear el directorio nfs 
+  file:
+    path: /mnt/nfs
+    state: directory
+    mode: 0755
+  tags: kubernetes
+# Se monta la unidad compartida con la unidad del servidor nfs
+# https://docs.ansible.com/ansible/2.9/modules/mount_module.html#mount-module
+- name: Montar la unidad compartida
+  mount:
+    path: /mnt/nfs
+    src: "vm-nfs:/mnt/nfs"
+    fstype: nfs
+    state: present
+  notify: reinicio
+  tags: kubernetes

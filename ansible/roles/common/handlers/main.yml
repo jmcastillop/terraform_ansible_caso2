@@ -1,4 +1,7 @@
 ---
 # handlers file for common
+# Se reinicia el sistema operativo
+# https://docs.ansible.com/ansible/2.9/modules/reboot_module.html#reboot-module
+
 - name: reinicio
   reboot:

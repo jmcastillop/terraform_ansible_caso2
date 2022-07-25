@@ -1,0 +1,31 @@
+---
+# https://docs.ansible.com/ansible/2.9/modules/service_module.html#service-module
+- name: iniciar firewalld
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+  tags: kubernetes
+
+# https://docs.ansible.com/ansible/2.9/modules/firewalld_module.html#firewalld-module
+- name: habilitar puertos kubernetes en firewall para nodo Master y Workers
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    state: enabled
+  loop: "{{ puertos }}"
+  notify: cargar firewall
+  tags: kubernetes
+# https://docs.ansible.com/ansible/2.9/modules/modprobe_module.html#modprobe-module
+- name: modulo br_netfilter
+  modprobe:
+    name: br_netfilter
+  tags: kubernetes
+
+- name: habilitar masquerade en firewall de manera permanente
+  firewalld:
+    masquerade: yes
+    permanent: yes
+    state: enabled
+  notify: cargar firewall
+  tags: kubernetes

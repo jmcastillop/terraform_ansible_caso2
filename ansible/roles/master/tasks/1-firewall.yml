@@ -1,0 +1,22 @@
+---
+# Realizamos la configuración y  politicas de red
+# https://docs.ansible.com/ansible/2.9/modules/firewalld_module.html#firewalld-module
+- name: habilitar puertos kubernetes en firewall para nodo Master
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    state: enabled
+    immediate: yes
+  loop: "{{ puertos }}"
+  notify: cargar firewall
+  tags: kubeMaster
+# https://docs.ansible.com/ansible/2.9/modules/firewalld_module.html#firewalld-module
+- name: habilitar puertos kubernetes en firewall para nodo Worker
+  firewalld:
+    rich_rule: rule family=ipv4 source address={{ hostvars[item].internal_ip }}/32 accept
+    permanent: yes
+    state: enabled
+    immediate: yes
+  loop: "{{ groups['workers'] }}"
+  notify: cargar firewall
+  tags: kubeMaster

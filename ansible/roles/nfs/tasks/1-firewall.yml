@@ -1,0 +1,10 @@
+---
+# https://docs.ansible.com/ansible/2.9/modules/firewalld_module.html#firewalld-module
+- name: activar firewall para servicios nfs
+  firewalld:
+    service: "{{ item }}"
+    permanent: yes
+    state: enabled
+  loop: "{{ servicios }}"
+  notify: cargar firewall
+  tags: nfs

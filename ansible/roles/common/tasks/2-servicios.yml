@@ -1,0 +1,25 @@
+---
+# Instalamos los paquete y servicios necesarios
+# https://docs.ansible.com/ansible/2.9/modules/dnf_module.html#dnf-module
+- name: instalar paquetes NFS
+  dnf:
+    name: "{{ item }}"
+    state: latest
+  loop: "{{ utilidades_nfs }}"
+  notify: reinicio
+  tags: common
+# https://docs.ansible.com/ansible/2.9/modules/yum_module.html#yum-module
+- name: 'Instalar servicios'
+  yum:
+    name: "{{ item }}"
+    state: latest
+  loop: "{{ rpms }}"
+  tags: common
+# https://docs.ansible.com/ansible/2.9/modules/systemd_module.html#systemd-module
+- name: 'Habilitar servicios necesarios'
+  systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  loop: "{{ servicios }}"
+  tags: common

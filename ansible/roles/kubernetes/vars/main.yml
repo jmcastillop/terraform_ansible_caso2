@@ -1,9 +1,11 @@
 ---
 # vars file for common_kubernetes
+# Declaramos variables para facilitar el cambio de parámetros para futuras
+# actualizaciones y cambio de sistema operativo
 OS: 'CentOS_8_Stream'
 Version: '1.24'
-url_1: '/etc/yum.repos.d/devel:kubic:libcontainers:stable.repo https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ OS }}/devel:kubic:libcontainers:stable.repo'
-url_2: '/etc/yum.repos.d/devel:kubic:libcontainers:stable:cri-o:{{ Version }}.repo https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable:cri-o:{{ Version }}/{{ OS }}/devel:kubic:libcontainers:stable:cri-o:{{ Version }}.repo'
+url_1: /etc/yum.repos.d/devel:kubic:libcontainers:stable.repo https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ OS }}/devel:kubic:libcontainers:stable.repo
+url_2: /etc/yum.repos.d/devel:kubic:libcontainers:stable:cri-o:{{ Version }}.repo https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable:cri-o:{{ Version }}/{{ OS }}/devel:kubic:libcontainers:stable:cri-o:{{ Version }}.repo
 rpms:
   - kubelet
   - kubeadm

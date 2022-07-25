@@ -1,0 +1,35 @@
+---
+# https://docs.ansible.com/ansible/2.9/modules/k8s_module.html#k8s-module
+- name: crear pod
+  k8s:
+    definition:
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: apache-deployment
+        namespace: apache
+        labels:
+          app: apache
+      spec:
+        selector:
+          matchLabels:
+            app: apache
+        replicas: 1
+        template:
+          metadata:
+            labels:
+              app: apache
+          spec:
+            containers:
+            - name: apache
+              image: quay.io/startx/apache
+              ports:
+              - containerPort: 80
+              volumeMounts:
+              - name: volumen-nfs 
+                mountPath: /mnt/nfs
+            volumes:
+            - name: volumen-nfs
+              persistentVolumeClaim:
+                claimName: nfs-pvc
+  tags: app

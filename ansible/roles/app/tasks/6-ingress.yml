@@ -1,0 +1,27 @@
+---
+# https://docs.ansible.com/ansible/2.9/modules/k8s_module.html#k8s-module
+- name: crear ingress
+  k8s:
+    definition:
+      apiVersion: networking.k8s.io/v1
+      kind: Ingress
+      metadata:
+        name: apache-ingress
+        namespace: apache
+        labels:
+          app: apache
+        annotations:
+          haproxy.org/path-rewrite: "/"
+          kubernetes.io/ingress.class: haproxy
+      spec:
+        rules:
+        - http:
+            paths:
+            - path: /volumes
+              pathType: Prefix
+              backend:
+                service:
+                  name: apache-service
+                  port:
+                    number: 9090
+  tags: app

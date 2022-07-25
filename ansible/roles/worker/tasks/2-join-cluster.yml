@@ -1,0 +1,16 @@
+---
+# Se realiza la unión de Workers al Cluster de Kubernetes
+# https://docs.ansible.com/ansible/2.9/modules/stat_module.html#stat-module
+- name: check joined
+  stat:
+    path: /etc/kubernetes/pki/ca.crt
+  register: joined_check
+  tags: kubeWorker
+
+#https://docs.ansible.com/ansible/2.9/modules/script_module.html#script-module
+- name: join
+  script: "/tmp/k8s_join.sh"
+  when: not joined_check.stat.exists
+  notify:
+    - reinicio
+  tags: kubeWorker

@@ -1,6 +1,5 @@
 ---
 # vars file for worker
-
 puertos:
   - 10250/tcp
   - 30000-32767/tcp
